@@ -59,6 +59,8 @@ public class MainPanel extends JPanel {
     private JList<String> jListInputFilesSelected;
     private JScrollPane jScrollPane1FileListItems;
     
+    private JButton jButtonClearAll;
+    
     // LIST OF FILE ITEMS - INPUT FILES TO EXTRACT
     private final ArrayList<File> INPUT_FILES = new ArrayList<File>();
 
@@ -96,10 +98,11 @@ public class MainPanel extends JPanel {
         jScrollPane1FileListItems = new JScrollPane(jListInputFilesSelected);
 
         jButtonCreateRunnable = new JButton("Create Runnable JAR >>");
+        jButtonClearAll = new JButton("Clear All");
         
         //adjust size and set layout
-        int frameHeight = 695;
-        int frameWidth = 545;
+        int frameHeight = 715;
+        int frameWidth = 575;
         setPreferredSize(new Dimension(frameHeight, frameWidth));
         setLayout(null);
 
@@ -118,6 +121,7 @@ public class MainPanel extends JPanel {
         add(jScrollPane1FileListItems);
         add(jButtonCreateRunnable);
         add(jScrollPanelOutputFileLogs);
+        add(jButtonClearAll);
         
         jButtonCreateRunnable.setEnabled(false);
         
@@ -211,15 +215,23 @@ public class MainPanel extends JPanel {
         
         int yCoordOfStatus = yCoordOfFileListItems + 125 + componentSpacing 
             + heightOfLabelsButtons + componentSpacing;
+        int widthOfLogs=widthOfSelectExternalJarsTitle 
+            + widthOfLabel
+            + widthOfButton
+            + leftHorizontalMargin
+            + componentSpacing;
         jScrollPanelOutputFileLogs.setBounds(
             leftHorizontalMargin,
             yCoordOfStatus,
-            leftHorizontalMargin 
-                    + widthOfSelectExternalJarsTitle 
-                    + widthOfSelectExternalJarsTitle 
-                    + widthOfButton 
-                    + leftHorizontalMargin,
+            widthOfLogs,
             165
+        );
+        
+        jButtonClearAll.setBounds(
+            widthOfSelectExternalJarsTitle + fileButtonHorizontalMargin + leftHorizontalMargin,
+            yCoordOfStatus + 165 + componentSpacing,
+            widthOfButton,
+            heightOfLabelsButtons
         );
         
         // Add actions performed by each selectable component
@@ -243,8 +255,24 @@ public class MainPanel extends JPanel {
                 ex.printStackTrace();
             }
         });
+        
+        jButtonClearAll.addActionListener((java.awt.event.ActionEvent evt) -> {
+            clearAllSelections(evt);
+        });
     }
-
+    
+    private void clearAllSelections(ActionEvent e) {
+        jLabelSelectedJARFileName.setText("(No File Selected)");
+        jTextFieldMainClassName.setText("gui.Main");
+        INPUT_FILES.clear();
+        jListInputFilesSelectedModel.clear();
+        jListInputFilesSelected = new JList<>(jListInputFilesSelectedModel);
+        jButtonCreateRunnable.setEnabled(false);
+        LOG_TEXT_AREA.setText("");
+        
+        LOGGER.info(() -> "Generate a Runnable JAR from your NetBeans built output. \n");
+    }
+    
     private void selectInputFilesAction(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select Input File(s)");
@@ -339,7 +367,7 @@ public class MainPanel extends JPanel {
         File destJarFile = new File(externalJarFolderAbsPath, jarFileName);
         createJarFile(filesToAddToJar, destJarFile.getAbsolutePath());
         
-        System.out.println("Cleaning up...");
+        System.out.println("Cleaning up");
         outputConsoleLogsBreakline(LOGGER, "Cleaning up");
         updateLogs();
         File[] tempFiles = tempWorkingDir.listFiles();
@@ -359,14 +387,24 @@ public class MainPanel extends JPanel {
             }
         }
         
-        JOptionPane.showMessageDialog(
-            APP_FRAME,
-            "Runnable JAR file has been successfully generated.",
-            "Alert",
-            JOptionPane.WARNING_MESSAGE
-        );
-        
-        Desktop.getDesktop().open(tempWorkingDir);
+        // move the RUNNABLE JAR to outside the JAR folder
+        // renaming the file and moving it to a new location
+        if(destJarFile.renameTo(new File(tempWorkingDir, jarFileName))){
+            boolean deletedExternalJarsDir = deleteDirectory(externalJarFolder);
+            if(deletedExternalJarsDir) {
+                System.out.println("File moved successfully");
+                JOptionPane.showMessageDialog(
+                    APP_FRAME,
+                    "Runnable JAR file has been successfully generated.",
+                    "Alert",
+                    JOptionPane.WARNING_MESSAGE
+                );
+
+                Desktop.getDesktop().open(tempWorkingDir);
+            }
+        } else {
+            System.out.println("Failed to move the file");
+        }
     }
 
     private void selectJARFileAction(ActionEvent e) {
