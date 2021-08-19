@@ -2,15 +2,18 @@
 ## Generate a Runnable JAR in 3 steps! (no Elipse IDE or wrapper classes or JAR commands required)
 #### A Java application to generate a Runnable JAR file from your built JAR outputs (e.g. from NetBeans IDE).
 
-#### Illustration:
-* Step 1. Select application JAR file (in NetBeans, this is usually built and output into the dist folder)
-![Step 1](https://github.com/incubated-geek-cc/Runnable-JAR-Generator/tree/main/screenshots/step1.png)
+---
 
-* Step 2. Select all external JAR libs which are depencies of the Java application (in NetBeans, this is usually output into the dist/lib folder)
-![Step 2](https://github.com/incubated-geek-cc/Runnable-JAR-Generator/tree/main/screenshots/step2.png)
+## Illustration:
 
-* Step 3. 
-![Step 3](https://github.com/incubated-geek-cc/Runnable-JAR-Generator/tree/main/screenshots/step3.png)
+#### Step 1. Select application JAR file (in NetBeans, this is usually built and output into the dist folder)
+![Step 1](https://github.com/incubated-geek-cc/Runnable-JAR-Generator/blob/main/screenshots/step1.png)
+
+#### Step 2. Select all external JAR libs which are depencies of the Java application (in NetBeans, this is usually output into the dist/lib folder)
+![Step 2](https://github.com/incubated-geek-cc/Runnable-JAR-Generator/blob/main/screenshots/step2.png)
+
+#### Step 3. 
+![Step 3](https://github.com/incubated-geek-cc/Runnable-JAR-Generator/blob/main/screenshots/step3.png)
 
 ---
 
