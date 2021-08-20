@@ -29,4 +29,4 @@
 
 #### No External `JAR` libraries included
 
-#### Article at: https://geek-cc.medium.com/generate-a-standalone-runnable-jar-file-in-3-simple-steps-no-eclipse-ide-cmd-shell-terminal-cf87b6cf0e20
+#### Article at: https://towardsdatascience.com/generate-a-standalone-runnable-jar-file-in-3-simple-steps-no-eclipse-ide-cmd-shell-terminal-cf87b6cf0e20

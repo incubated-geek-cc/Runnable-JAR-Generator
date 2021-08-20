@@ -168,7 +168,9 @@ public class MainPanel extends JPanel {
         jTextFieldMainClassName.setBounds(
                 fileButtonHorizontalMargin,
                 15 + verticalMargin,
-                widthOfButton,
+                frameWidth
+                - fileButtonHorizontalMargin
+                + widthOfButton,
                 heightOfLabelsButtons);
 
         jLabelSelectedJARs.setBounds(
@@ -399,11 +401,11 @@ public class MainPanel extends JPanel {
                     "Alert",
                     JOptionPane.WARNING_MESSAGE
                 );
-
                 Desktop.getDesktop().open(tempWorkingDir);
             }
         } else {
             System.out.println("Failed to move the file");
+            LOGGER.info(() -> "Failed to move the file.\n");
         }
     }
 
