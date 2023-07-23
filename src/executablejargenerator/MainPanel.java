@@ -29,16 +29,16 @@ public class MainPanel extends JPanel {
     private static final JFrame APP_FRAME = new JFrame("Create Runnable JAR from NetBeans IDE :: v1.0");
     private static final String LOGGER_NAME = MethodHandles.lookup().lookupClass().getName();
     private static final Logger LOGGER = Logger.getLogger(LOGGER_NAME);
-    
+
     // OUTPUT LOGS
     private static final JTextArea LOG_TEXT_AREA = new JTextArea();
     private static JScrollPane jScrollPanelOutputFileLogs;
-    
+
     private String nameOfMainClass;
     private String nameOfManifestDir;
     private String nameOfExternalJARsDir;
     private String nameOfManifestFile;
-    
+
     private JButton jButtonCreateRunnable;
     private JButton jButtonSelectJARFile;
 
@@ -50,7 +50,7 @@ public class MainPanel extends JPanel {
     private JLabel jLabelSelectedJARs;
     private JButton jButtonSelectJARs;
     private JLabel jLabelInputFilesSelected;
-        
+
     private File inputJARFile = null;
 
     // input files selected
@@ -58,9 +58,9 @@ public class MainPanel extends JPanel {
     private DefaultListModel jListInputFilesSelectedModel = new DefaultListModel<>();
     private JList<String> jListInputFilesSelected;
     private JScrollPane jScrollPane1FileListItems;
-    
+
     private JButton jButtonClearAll;
-    
+
     // LIST OF FILE ITEMS - INPUT FILES TO EXTRACT
     private final ArrayList<File> INPUT_FILES = new ArrayList<File>();
 
@@ -68,19 +68,19 @@ public class MainPanel extends JPanel {
         LOGGER.setUseParentHandlers(false);
         LOGGER.setLevel(Level.ALL);
         LOGGER.addHandler(new TextAreaHandler(new TextAreaOutputStream(LOG_TEXT_AREA)));
-        
+
         LOGGER.info(() -> "Generate a Runnable JAR from your NetBeans built output. \n");
-        
+
         // OUTPUT LOGS
         LOG_TEXT_AREA.setEditable(false);
         LOG_TEXT_AREA.setWrapStyleWord(true);
         jScrollPanelOutputFileLogs = new JScrollPane(LOG_TEXT_AREA);
         updateLogs();
         jScrollPanelOutputFileLogs.setHorizontalScrollBar(null);
-        
+
         DefaultCaret caret = (DefaultCaret) LOG_TEXT_AREA.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        
+
         //construct components
         jLabelSelectJARFile = new JLabel("Step 1: Select Compiled JAR (in dist folder)*");
         jButtonSelectJARFile = new JButton("Choose File...");
@@ -99,7 +99,7 @@ public class MainPanel extends JPanel {
 
         jButtonCreateRunnable = new JButton("Create Runnable JAR >>");
         jButtonClearAll = new JButton("Clear All");
-        
+
         //adjust size and set layout
         int frameHeight = 715;
         int frameWidth = 575;
@@ -122,9 +122,9 @@ public class MainPanel extends JPanel {
         add(jButtonCreateRunnable);
         add(jScrollPanelOutputFileLogs);
         add(jButtonClearAll);
-        
+
         jButtonCreateRunnable.setEnabled(false);
-        
+
         //set component bounds (only needed by Absolute Positioning)
         int leftHorizontalMargin = 15;
         int widthOfLabel = 260;
@@ -203,7 +203,7 @@ public class MainPanel extends JPanel {
         jScrollPane1FileListItems.setBounds(
                 fileButtonHorizontalMargin,
                 yCoordOfFileListItems,
-                widthOfSelectExternalJarsTitle 
+                widthOfSelectExternalJarsTitle
                 + widthOfButton
                 + leftHorizontalMargin,
                 125);
@@ -214,28 +214,28 @@ public class MainPanel extends JPanel {
                 185,
                 heightOfLabelsButtons
         );
-        
-        int yCoordOfStatus = yCoordOfFileListItems + 125 + componentSpacing 
-            + heightOfLabelsButtons + componentSpacing;
-        int widthOfLogs=widthOfSelectExternalJarsTitle 
-            + widthOfLabel
-            + widthOfButton
-            + leftHorizontalMargin
-            + componentSpacing;
+
+        int yCoordOfStatus = yCoordOfFileListItems + 125 + componentSpacing
+                + heightOfLabelsButtons + componentSpacing;
+        int widthOfLogs = widthOfSelectExternalJarsTitle
+                + widthOfLabel
+                + widthOfButton
+                + leftHorizontalMargin
+                + componentSpacing;
         jScrollPanelOutputFileLogs.setBounds(
-            leftHorizontalMargin,
-            yCoordOfStatus,
-            widthOfLogs,
-            165
+                leftHorizontalMargin,
+                yCoordOfStatus,
+                widthOfLogs,
+                165
         );
-        
+
         jButtonClearAll.setBounds(
-            widthOfSelectExternalJarsTitle + fileButtonHorizontalMargin + leftHorizontalMargin,
-            yCoordOfStatus + 165 + componentSpacing,
-            widthOfButton,
-            heightOfLabelsButtons
+                widthOfSelectExternalJarsTitle + fileButtonHorizontalMargin + leftHorizontalMargin,
+                yCoordOfStatus + 165 + componentSpacing,
+                widthOfButton,
+                heightOfLabelsButtons
         );
-        
+
         // Add actions performed by each selectable component
         jButtonSelectJARFile.addActionListener((java.awt.event.ActionEvent evt) -> {
             selectJARFileAction(evt);
@@ -257,12 +257,12 @@ public class MainPanel extends JPanel {
                 ex.printStackTrace();
             }
         });
-        
+
         jButtonClearAll.addActionListener((java.awt.event.ActionEvent evt) -> {
             clearAllSelections(evt);
         });
     }
-    
+
     private void clearAllSelections(ActionEvent e) {
         jLabelSelectedJARFileName.setText("(No File Selected)");
         jTextFieldMainClassName.setText("gui.Main");
@@ -271,10 +271,10 @@ public class MainPanel extends JPanel {
         jListInputFilesSelected = new JList<>(jListInputFilesSelectedModel);
         jButtonCreateRunnable.setEnabled(false);
         LOG_TEXT_AREA.setText("");
-        
+
         LOGGER.info(() -> "Generate a Runnable JAR from your NetBeans built output. \n");
     }
-    
+
     private void selectInputFilesAction(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select Input File(s)");
@@ -318,21 +318,25 @@ public class MainPanel extends JPanel {
         String tempFolderName = "extracted_" + getCurrentTimeStamp();
         File tempWorkingDir = new File(workingDir, tempFolderName);
         tempWorkingDir.mkdir();
+        
         File externalJarFolder = new File(tempWorkingDir, nameOfExternalJARsDir);
         externalJarFolder.mkdir();
         String externalJarFolderAbsPath = externalJarFolder.getAbsolutePath();
         String jarFileName = inputJARFile.getName();
-        
+
         File copiedJarFile = new File(tempWorkingDir, jarFileName);
         if (!copiedJarFile.exists()) {
             copiedJarFile.createNewFile();
         }
         copy(inputJARFile, copiedJarFile);
+
         
         System.out.println("External JARs are being extracted");
         outputConsoleLogsBreakline(LOGGER, "External JARs are being extracted");
         updateLogs();
         extractJARFileContents(INPUT_FILES, externalJarFolder);
+        
+        
         
         System.out.println("Contents from application JAR are being extracted");
         outputConsoleLogsBreakline(LOGGER, "Contents from application JAR are being extracted");
@@ -340,73 +344,48 @@ public class MainPanel extends JPanel {
         ArrayList<File> arrList = new ArrayList<File>();
         arrList.add(copiedJarFile);
         extractJARFileContents(arrList, externalJarFolder);
-        
+
         // META-INF + Manifest File
         System.out.println("Configuring " + nameOfManifestFile + " file");
         outputConsoleLogsBreakline(LOGGER, "Configuring " + nameOfManifestFile + " file");
         updateLogs();
         File manifestDir = new File(externalJarFolderAbsPath, nameOfManifestDir);
-        boolean deletedOriginalManifestDir = deleteDirectory(manifestDir);
-        if (deletedOriginalManifestDir) {
+//        boolean deletedOriginalManifestDir = deleteDirectory(manifestDir);
+//        if (deletedOriginalManifestDir) {
             // recreate manifestDir
-            manifestDir = new File(externalJarFolderAbsPath, nameOfManifestDir);
-            boolean createdManifestDir = manifestDir.mkdir();
-            if (createdManifestDir) {
+//            manifestDir = new File(externalJarFolderAbsPath, nameOfManifestDir);
+//            boolean createdManifestDir = manifestDir.mkdir();
+//            if (createdManifestDir) {
                 File manifestFile = new File(manifestDir.getAbsolutePath(), nameOfManifestFile);
-                FileWriter myWriter = new FileWriter(manifestFile);
-                // writing the Manifest File
-                myWriter.write("Manifest-Version: 1.0" + "\n");
-                myWriter.write("Class-Path: ." + "\n");
-                myWriter.write("Main-Class: " + nameOfMainClass + "\n");
-                myWriter.close();
-            }
+        // writing the Manifest File
+        try (FileWriter myWriter = new FileWriter(manifestFile)) {
+            // writing the Manifest File
+            myWriter.write("Manifest-Version: 1.0" + "\n");
+            myWriter.write("Class-Path: ." + "\n");
+            myWriter.write("Main-Class: " + nameOfMainClass + "\n");
+            myWriter.close();
+//            }
+//        }
         }
-        
+
         System.out.println("Creating Runnable JAR file");
         outputConsoleLogsBreakline(LOGGER, "Creating Runnable JAR file");
         updateLogs();
-        File[] filesToAddToJar=externalJarFolder.listFiles();
-        File destJarFile = new File(externalJarFolderAbsPath, jarFileName);
+        File[] filesToAddToJar = externalJarFolder.listFiles();
+        String destJarFilepath=externalJarFolderAbsPath + "\\"+jarFileName;
+        File destJarFile = new File(destJarFilepath);
         createJarFile(filesToAddToJar, destJarFile.getAbsolutePath());
         
-        System.out.println("Cleaning up");
-        outputConsoleLogsBreakline(LOGGER, "Cleaning up");
-        updateLogs();
-        File[] tempFiles = tempWorkingDir.listFiles();
-        for (File tempFile : tempFiles) {
-            String tempFileName = tempFile.getName();
-            if (!tempFileName.equalsIgnoreCase(externalJarFolder.getName())) {
-                tempFile.delete();
-            }
-        }
-        tempFiles = externalJarFolder.listFiles();
-        for (File tempFile : tempFiles) {
-            String tempFileName = tempFile.getName();
-            if(tempFile.isDirectory()) {
-                deleteDirectory(tempFile);
-            } else if (!tempFileName.equalsIgnoreCase(jarFileName)) {
-                tempFile.delete();
-            }
-        }
+        String targetFilepath=tempWorkingDir + "\\"+jarFileName;
+        moveFile(destJarFilepath, targetFilepath);
         
-        // move the RUNNABLE JAR to outside the JAR folder
-        // renaming the file and moving it to a new location
-        if(destJarFile.renameTo(new File(tempWorkingDir, jarFileName))){
-            boolean deletedExternalJarsDir = deleteDirectory(externalJarFolder);
-            if(deletedExternalJarsDir) {
-                System.out.println("File moved successfully");
-                JOptionPane.showMessageDialog(
-                    APP_FRAME,
-                    "Runnable JAR file has been successfully generated.",
-                    "Alert",
-                    JOptionPane.WARNING_MESSAGE
-                );
-                Desktop.getDesktop().open(tempWorkingDir);
-            }
-        } else {
-            System.out.println("Failed to move the file");
-            LOGGER.info(() -> "Failed to move the file.\n");
-        }
+        JOptionPane.showMessageDialog(
+                APP_FRAME,
+                "Runnable JAR file has been successfully generated.",
+                "Alert",
+                JOptionPane.WARNING_MESSAGE
+        );
+        Desktop.getDesktop().open(tempWorkingDir);
     }
 
     private void selectJARFileAction(ActionEvent e) {
@@ -428,14 +407,17 @@ public class MainPanel extends JPanel {
             }
         }
     }
-    
+    private static boolean moveFile(String sourcePath, String targetPath) {
+        File fileToMove = new File(sourcePath);
+        return fileToMove.renameTo(new File(targetPath));
+    }
     private static void updateLogs() {
         jScrollPanelOutputFileLogs.getVerticalScrollBar().setValue(jScrollPanelOutputFileLogs.getVerticalScrollBar().getMaximum());
         jScrollPanelOutputFileLogs.getVerticalScrollBar().paint(jScrollPanelOutputFileLogs.getVerticalScrollBar().getGraphics());
         LOG_TEXT_AREA.scrollRectToVisible(LOG_TEXT_AREA.getVisibleRect());
         LOG_TEXT_AREA.paint(LOG_TEXT_AREA.getGraphics());
     }
-    
+
     private static void addTextToOutputLogs(Logger LOGGER, String logString) {
         LOGGER.info(() -> logString);
     }
@@ -465,40 +447,40 @@ public class MainPanel extends JPanel {
         logString = logString + "\n";
         addTextToOutputLogs(LOGGER, logString);
     }
-    
+
     private void extractJARFileContents(ArrayList<File> jarFiles, File destDir) throws IOException {
         for (File jarFile : jarFiles) {
-            FileInputStream jarFileInputStream = new FileInputStream(jarFile);
-            byte[] buffer = new byte[1024];
-            ZipInputStream jarInputStream = new ZipInputStream(jarFileInputStream);
-            ZipEntry jarEntry = jarInputStream.getNextEntry();
-            while (jarEntry != null) {
-                File newJarContent = newJarContent(destDir, jarEntry);
-                if (jarEntry.isDirectory()) {
-                    if (!newJarContent.isDirectory() && !newJarContent.mkdirs()) {
-                        throw new IOException("Failed to create directory " + newJarContent);
-                    }
-                } else {
-                    // fix for Windows-created archives
-                    File parent = newJarContent.getParentFile();
-                    if (!parent.isDirectory() && !parent.mkdirs()) {
-                        throw new IOException("Failed to create directory " + parent);
-                    }
-                    // write file content
-                    if (!newJarContent.getName().equalsIgnoreCase("META-INF")) {
-                        FileOutputStream fos = new FileOutputStream(newJarContent);
-                        int len;
-                        while ((len = jarInputStream.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len);
+            try (FileInputStream jarFileInputStream = new FileInputStream(jarFile)) {
+                byte[] buffer = new byte[1024];
+                try (ZipInputStream jarInputStream = new ZipInputStream(jarFileInputStream)) {
+                    ZipEntry jarEntry = jarInputStream.getNextEntry();
+                    while (jarEntry != null) {
+                        File newJarContent = newJarContent(destDir, jarEntry);
+                        if (jarEntry.isDirectory()) {
+                            if (!newJarContent.isDirectory() && !newJarContent.mkdirs()) {
+                                throw new IOException("Failed to create directory " + newJarContent);
+                            }
+                        } else {
+                            // fix for Windows-created archives
+                            File parent = newJarContent.getParentFile();
+                            if (!parent.isDirectory() && !parent.mkdirs()) {
+                                throw new IOException("Failed to create directory " + parent);
+                            }
+                            // write file content
+//                            if (!newJarContent.getName().equalsIgnoreCase(MANIFEST_FILENAME)) {
+                                FileOutputStream fos = new FileOutputStream(newJarContent);
+                                int len;
+                                while ((len = jarInputStream.read(buffer)) > 0) {
+                                    fos.write(buffer, 0, len);
+                                }
+                                fos.close();
+//                            }
                         }
-                        fos.close();
+                        jarEntry = jarInputStream.getNextEntry();
                     }
+                    jarInputStream.closeEntry();
                 }
-                jarEntry = jarInputStream.getNextEntry();
             }
-            jarInputStream.closeEntry();
-            jarInputStream.close();
-            jarFileInputStream.close();
         }
     }
 
@@ -538,7 +520,7 @@ public class MainPanel extends JPanel {
         }
         return directoryToBeDeleted.delete();
     }
-    
+
     private String getCurrentTimeStamp() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd_MMM_yyyy_hhmmaa");
         Date date = new Date();
@@ -546,7 +528,7 @@ public class MainPanel extends JPanel {
 
         return timestamp;
     }
-    
+
     private void createJarFile(File[] listFiles, String destJarFile) throws FileNotFoundException, IOException {
         ZipOutputStream jarOS = new ZipOutputStream(new FileOutputStream(destJarFile));
         for (File file : listFiles) {
@@ -559,7 +541,7 @@ public class MainPanel extends JPanel {
         jarOS.flush();
         jarOS.close();
     }
-    
+
     private void addDirToJar(File folder, String parentFolder, ZipOutputStream jarOS) throws FileNotFoundException, IOException {
         for (File file : folder.listFiles()) {
             if (file.isDirectory()) {
@@ -578,7 +560,7 @@ public class MainPanel extends JPanel {
             jarOS.closeEntry();
         }
     }
-    
+
     private void addFileToJar(File file, ZipOutputStream zos) throws FileNotFoundException, IOException {
         zos.putNextEntry(new ZipEntry(file.getName()));
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
@@ -591,8 +573,8 @@ public class MainPanel extends JPanel {
         }
         zos.closeEntry();
     }
-    
-    public static void main(String[] args) {
+
+    private static void createAndShowGUI() {
         APP_FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         APP_FRAME.getContentPane().add(new MainPanel());
         APP_FRAME.pack();
@@ -600,5 +582,9 @@ public class MainPanel extends JPanel {
         // set to center and middle of screen
         APP_FRAME.setLocationRelativeTo(null);
         APP_FRAME.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        createAndShowGUI();
     }
 }
